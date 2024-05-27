@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { createPerson, Person } from "$lib/person";
 import { KanbanBoard } from "$lib/kanban-board";
+import exp from "node:constants";
 
 /**
  * toBe: https://vitest.dev/api/expect.html#tobe
@@ -12,109 +13,112 @@ import { KanbanBoard } from "$lib/kanban-board";
  * toThrowError: https://vitest.dev/api/expect.html#tothrowerror
  */
 
-it.todo(
-  "should pass if the two numbers would add up correctly in a language other than JavaScript",
-  () => {
-    expect(0.2 + 0.1).toEqual(0.3);
-  },
-);
+it("should pass if the two numbers would add up correctly in a language other than JavaScript", () => {
+  const num1 = 0.2 + 0.1;
+  const num2 = 0.3;
+  expect(num1.toFixed(2)).toEqual(num2.toFixed(2));
+  expect(num1).toBeCloseTo(num2, 15);
+});
 
 describe("createPerson", () => {
-  it.todo("should create an instance of a person", () => {
+  it("should create an instance of a person", () => {
     const person = createPerson("Ada Lovelace");
     expect.hasAssertions();
-    // Verify that person is an instance of a Person.
+    expect(person.firstName).toEqual("Ada");
+    expect(person.lastName).toEqual("Lovelace");
+    expect(person).toBeInstanceOf(Person);
   });
 });
 
 describe("Kanban Board", () => {
-  it.todo('should include "Backlog" in board.statuses', () => {
+  it('should include "Backlog" in board.statuses', () => {
     const board = new KanbanBoard("Things to Do");
     expect.hasAssertions();
-    // Verify that board.statuses contains "Backlog".
+    expect(board.statuses).toContain("Backlog");
   });
 
-  it.todo('should *not* include "Bogus" in board.statuses', () => {
+  it('should *not* include "Bogus" in board.statuses', () => {
     const board = new KanbanBoard("Things to Do");
     expect.hasAssertions();
-    // Verify that board.statuses does not contain "Bogus".
+    expect(Array.isArray(board.statuses)).toBe(true);
+    expect(board.statuses).not.toContain("Bogus");
   });
 
-  it.todo(
-    "should include an added status in board.statuses using #addStatus",
-    () => {
-      const board = new KanbanBoard("Things to Do");
-      expect.hasAssertions();
-      // Use board.addStatus to add a status.
-      // Verify that the new status is—in fact—now in board.statuses.
-    },
-  );
-
-  it.todo("should remove a status using #removeStatus", () => {
+  it("should include an added status in board.statuses using #addStatus", () => {
     const board = new KanbanBoard("Things to Do");
     expect.hasAssertions();
-    // Use board.removeStatus to remove a status.
+    board.addStatus("SKIPPED");
+    expect(board.statuses).toContain("SKIPPED");
+  });
 
-    // You can be clever or you can just assume "Backlog" is in board.statuses
-    // by default.
+  it("should remove a status using #removeStatus", () => {
+    const board = new KanbanBoard("Things to Do");
+    expect.hasAssertions();
 
-    // Verify that the status is no longer in in board.statuses.
+    expect(board.statuses).toContain("Backlog");
+
+    board.removeStatus("Backlog");
+
+    expect(board.statuses).not.contain("Backlog");
   });
 });
 
 describe("Person", () => {
-  it.todo("will create a person with a first name", () => {
-    const person = new Person("Madonna");
+  it("will create a person with a first name", () => {
+    const nameToCreate = "아무개";
+    const person = new Person(nameToCreate);
+
+    expect(person.firstName).toBe(nameToCreate);
     expect.hasAssertions();
-    // Verify that person.firstName is correct.
   });
 
-  it.todo("will create a person with a first and last name", () => {
-    const person = new Person("Madonna Cicone");
+  it("will create a person with a first and last name", () => {
+    const person = new Person("아무개 김");
     expect.hasAssertions();
+    expect(person.firstName).toBe("아무개");
+    expect(person.lastName).toBe("김");
     // Verify that person.lastName is correct.
   });
 
-  it.todo("will create a person with a first, middle, and last name", () => {
-    const person = new Person("Madonna Louise Cicone");
+  it("will create a person with a first, middle, and last name", () => {
+    const person = new Person("아무개 볼펜 킴");
     expect.hasAssertions();
-    // Verify that person.middleName is correct.
+    const { firstName, middleName, lastName } = person;
+    expect(firstName).toBe("아무개");
+    expect(middleName).toBe("볼펜");
+    expect(lastName).toBe("킴");
   });
 
-  it.todo("will throw if you provide an empty string", () => {
+  it("will throw if you provide an empty string", () => {
     const fn = () => {
       new Person("");
     };
 
     expect.hasAssertions();
 
-    // Verify that function above throws.
+    expect(fn).toThrowError("fullName cannot be an empty string.");
   });
 
-  it.todo(
-    "will throw a specific error message if you provide an empty string",
-    () => {
-      const errorMessage = "fullName cannot be an empty string";
+  it("will throw a specific error message if you provide an empty string", () => {
+    const errorMessage = "fullName cannot be an empty string";
 
-      const fn = () => {
-        new Person("");
-      };
-
-      expect.hasAssertions();
-
-      // Verify that function above throws the error message above.
-    },
-  );
-
-  it.todo("will add a friend", () => {
-    const john = new Person("John Lennon");
-    const paul = new Person("Paul McCartney");
-
-    john.addFriend(paul);
+    const fn = () => {
+      new Person("");
+    };
 
     expect.hasAssertions();
 
-    // Verify that john.friends contains paul.
+    expect(fn).toThrowError(errorMessage);
+  });
+
+  it("will add a friend", () => {
+    const john = new Person("John Lennon");
+    const paul = new Person("Paul McCartney");
+
+    expect.hasAssertions();
+
+    john.addFriend(paul);
+    expect(john.friends.has(paul)).toBe(true);
   });
 
   it.todo("will mutually add a friend", () => {
@@ -124,11 +128,9 @@ describe("Person", () => {
     john.addFriend(paul);
 
     expect.hasAssertions();
-
-    // Verify that paul.friends contains john.
   });
 
-  it.todo("will remove a friend", () => {
+  it("will remove a friend", () => {
     const john = new Person("John Lennon");
     const paul = new Person("Paul McCartney");
 
@@ -137,10 +139,11 @@ describe("Person", () => {
 
     expect.hasAssertions();
 
+    expect(john.friends.has(paul)).toBe(false);
     // Verify that john.friends does not include paul.
   });
 
-  it.todo("will mutually remove friends", () => {
+  it("will mutually remove friends", () => {
     const john = new Person("John Lennon");
     const paul = new Person("Paul McCartney");
 
@@ -149,7 +152,8 @@ describe("Person", () => {
 
     expect.hasAssertions();
 
-    // Verify that paul.friends does not include john.
+    expect(john.friends.has(paul)).toBe(false);
+    expect(paul.friends.has(john)).toBe(false);
   });
 });
 
