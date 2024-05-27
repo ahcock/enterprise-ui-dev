@@ -1,0 +1,8 @@
+{
+  "scripts": {
+    "test": "vitest"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.2.1"
+  }
+}
